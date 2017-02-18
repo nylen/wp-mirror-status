@@ -54,27 +54,30 @@ gh.repos.getCommits( {
 		let descriptionMessage;
 		if ( revisionOfficial > revisionMy ) {
 			descriptionMessage = util.format(
-				'This repository is %d revision%s behind https://github.com/WordPress/wordpress-develop 😞',
+				'😞 This repository is %d revision%s behind https://github.com/WordPress/wordpress-develop',
 				revisionOfficial - revisionMy,
 				( revisionOfficial - revisionMy === 1 ? '' : 's' )
 			);
 		} else if ( revisionMy > revisionOfficial ) {
 			descriptionMessage = util.format(
-				'https://github.com/WordPress/wordpress-develop is %d revision%s behind this repository 😞',
+				'😞 https://github.com/WordPress/wordpress-develop is %d revision%s behind this repository',
 				revisionMy - revisionOfficial,
 				( revisionMy - revisionOfficial === 1 ? '' : 's' )
 			);
 		} else {
 			descriptionMessage = (
-				'This repository is up to date with https://github.com/WordPress/wordpress-develop ✨'
+				'✨ This repository is up to date with https://github.com/WordPress/wordpress-develop'
 			);
 		}
+
+		const dateString = new Date().toISOString()
+			.replace( /(T\d\d:\d\d).*Z$/, '$1Z' );
 
 		gh.repos.edit( {
 			owner       : 'nylen',
 			name        : 'wordpress-develop-svn',
 			repo        : 'wordpress-develop-svn',
-			description : descriptionMessage,
+			description : dateString + ' ' + descriptionMessage,
 		}, ( err, result ) => {
 			if ( err ) {
 				throw err;
