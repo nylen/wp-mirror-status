@@ -54,13 +54,13 @@ gh.repos.getCommits( {
 		let descriptionMessage;
 		if ( revisionOfficial > revisionMy ) {
 			descriptionMessage = util.format(
-				'This repository is %d commit%s behind https://github.com/WordPress/wordpress-develop 😞',
+				'This repository is %d revision%s behind https://github.com/WordPress/wordpress-develop 😞',
 				revisionOfficial - revisionMy,
 				( revisionOfficial - revisionMy === 1 ? '' : 's' )
 			);
 		} else if ( revisionMy > revisionOfficial ) {
 			descriptionMessage = util.format(
-				'https://github.com/WordPress/wordpress-develop is %d commit%s behind this repository 😞',
+				'https://github.com/WordPress/wordpress-develop is %d revision%s behind this repository 😞',
 				revisionMy - revisionOfficial,
 				( revisionMy - revisionOfficial === 1 ? '' : 's' )
 			);
