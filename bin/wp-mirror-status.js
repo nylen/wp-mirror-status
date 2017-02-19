@@ -2,8 +2,10 @@
 
 'use strict';
 
-const github  = require( 'github' );
-const util    = require( 'util' );
+const https = require( 'https' );
+const util  = require( 'util' );
+
+const github = require( 'github' );
 
 const config = require( '../config.json' );
 
@@ -73,16 +75,51 @@ gh.repos.getCommits( {
 		const dateString = new Date().toISOString()
 			.replace( /(T\d\d:\d\d).*Z$/, '$1Z' );
 
-		gh.repos.edit( {
-			owner       : 'nylen',
-			name        : 'wordpress-develop-svn',
-			repo        : 'wordpress-develop-svn',
-			description : dateString + ' ' + descriptionMessage,
-		}, ( err, result ) => {
+		const travisUrl = 'https://api.travis-ci.org/repos/nylen/wordpress-develop-svn/builds';
+		httpsRequest( travisUrl, ( err, builds ) => {
 			if ( err ) {
 				throw err;
 			}
-			// console.log( result );
+
+			const build = builds.find( b => b.state === 'finished' );
+			const buildStatusEmoji = ( build && build.result === 0 ? '🐸' : '🔴' );
+
+			const fullMessage = [
+				dateString,
+				descriptionMessage,
+				buildStatusEmoji,
+			].join( ' ' );
+
+			gh.repos.edit( {
+				owner       : 'nylen',
+				name        : 'wordpress-develop-svn',
+				repo        : 'wordpress-develop-svn',
+				description : fullMessage,
+			}, ( err, result ) => {
+				if ( err ) {
+					throw err;
+				}
+				// console.log( result );
+			} );
 		} );
 	} );
 } );
+
+const httpsRequest = ( url, cb ) => {
+	https.get( url, res => {
+		if ( res.statusCode !== 200 ) {
+			cb( new Error( 'HTTP ' + res.statusCode ) );
+			return;
+		}
+		let data = '';
+		res.on( 'data', d => data += d );
+		res.on( 'end', () => {
+			try {
+				data = JSON.parse( data );
+				cb( null, data );
+			} catch ( err ) {
+				cb( err );
+			}
+		} );
+	} );
+};
