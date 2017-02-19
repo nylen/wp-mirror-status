@@ -82,12 +82,12 @@ gh.repos.getCommits( {
 			}
 
 			const build = builds.find( b => b.state === 'finished' );
-			const buildStatusEmoji = ( build && build.result === 0 ? '🐸' : '🔴' );
+			const buildStatusMessage = '| build: ' + ( build && build.result === 0 ? '🐸' : '💔' );
 
 			const fullMessage = [
 				dateString,
 				descriptionMessage,
-				buildStatusEmoji,
+				buildStatusMessage,
 			].join( ' ' );
 
 			gh.repos.edit( {
