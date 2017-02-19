@@ -99,6 +99,7 @@ gh.repos.getCommits( {
 				if ( err ) {
 					throw err;
 				}
+				console.log( fullMessage );
 				// console.log( result );
 			} );
 		} );
