@@ -1,5 +1,5 @@
 {
   "dependencies": {
-    "github": "^9.0.0"
+    "@octokit/rest": "^16.30.1"
   }
 }

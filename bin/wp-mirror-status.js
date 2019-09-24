@@ -5,36 +5,32 @@
 const https = require( 'https' );
 const util  = require( 'util' );
 
-const github = require( 'github' );
+const github = require( '@octokit/rest' );
 
 const config = require( '../config.json' );
 
+// https://github.com/nodejs/node/issues/17871 :(
+process.on( 'unhandledRejection', err => {
+	console.error( 'Unhandled promise rejection:', err );
+	process.exit( 1 );
+} );
+
 const gh = new github( {
-	version : '3.0.0'
+	version : '3.0.0',
+	auth    : config.github.apiToken,
 } );
 
-gh.authenticate( {
-	type  : 'oauth',
-	token : config.github.apiToken
-} );
-
-gh.repos.getCommits( {
+gh.repos.listCommits( {
 	owner    : 'WordPress',
 	repo     : 'wordpress-develop',
 	per_page : 1,
-}, ( err, commitsOfficial ) => {
-	if ( err ) {
-		throw err;
-	}
+} ).then( commitsOfficial => {
 
-	gh.repos.getCommits( {
+	gh.repos.listCommits( {
 		owner    : 'nylen',
 		repo     : 'wordpress-develop-svn',
 		per_page : 1,
-	}, ( err, commitsMy ) => {
-		if ( err ) {
-			throw err;
-		}
+	} ).then( commitsMy => {
 
 		const getRevision = commit => {
 			if ( ! commit ) {
@@ -90,15 +86,12 @@ gh.repos.getCommits( {
 				buildStatusMessage,
 			].join( ' ' );
 
-			gh.repos.edit( {
+			gh.repos.update( {
 				owner       : 'nylen',
-				name        : 'wordpress-develop-svn',
 				repo        : 'wordpress-develop-svn',
 				description : fullMessage,
-			}, ( err, result ) => {
-				if ( err ) {
-					throw err;
-				}
+				homepage    : buildUrl,
+			} ).then( result => {
 				console.log( fullMessage );
 				// console.log( result );
 			} );
