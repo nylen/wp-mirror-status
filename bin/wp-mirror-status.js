@@ -123,7 +123,6 @@ gh.repos.listCommits( {
 					owner       : 'nylen',
 					repo        : 'wordpress-develop-svn',
 					description : fullMessage,
-					homepage    : buildUrl,
 				} ).then( result => {
 					console.log( fullMessage );
 					// console.log( result );
