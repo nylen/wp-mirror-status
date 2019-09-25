@@ -14,5 +14,6 @@ set -e # exit on error
 	git push origin master --quiet
 
 	# This updates the description of this repository
-	node /home/james/code/wp-mirror-status/bin/wp-mirror-status.js
+	# nvm-launch is https://github.com/nylen/dotfiles/blob/master/bin/nvm-launch
+	nvm-launch node /home/james/code/wp-mirror-status/bin/wp-mirror-status.js
 ) 9> /tmp/update-wordpress-develop-svn.lock
